@@ -1,12 +1,13 @@
 # goHive5 Overview
 
-## Case Management
-
+## Auth
 ### Login
 | Description | gohive5
 |:---|:---|
 | Base hive object | CreateLogin()
 
+
+## Case Management
 
 ### Alert
 | Description | gohive5  |
@@ -34,19 +35,25 @@
 | Find case by custom field | FindCaseByCustomField() | 
 | Get Case status options (New/InProgress etc.) | GetCaseStatusOptions()|
 
-### Comments
+## Comments
+
+### Alert
 | Description | gohive5  |
 |:---|:---|
 | Add alert comment | AddAlertComment() |
 | Get alert comments | GetAlertComments() |
+
+### Case
+| Description | gohive5  |
+|:---|:---|
 | Add case comment | AddCaseComment() |
 | Get case comment | GetCaseComments() |
 | Get case comments since a specific date | GetCaseCommentsTimed() |
 
 
-### Observables
+## Observables
 
-#### General
+### General
 | Description | gohive5  |
 |:---|:---|
 | Get all observable types available | GetObservableTypes()|
@@ -55,16 +62,14 @@
 | Delete observable | DeleteObservable() |
 
 
-//TODO
-
-##### Alert
+### Alert
 | Description | gohive5  |
 |:---|:---|
 | Add observable | AddAlertObservable() |
 | Get observables (all) | GetAlertObservables() |
 | Get observable (single) | GetAlertObservable() |
 
-##### Case
+### Case
 | Description | gohive5  |
 |:---|:---|
 | Add observable | AddCaseObservable() |
@@ -72,9 +77,9 @@
 | Add file as an observable | AddCaseObservableFile() |
 | Get observables filtered (dataType + value) | GetCaseObservablesFiltered() |
 
-### Tasks
+## Tasks
 
-#### General
+### General
 | Description | gohive5  |
 |:---|:---|
 | Get task | GetTask() |
@@ -83,24 +88,24 @@
 | Add task log (Message underneath task) | CreateTaskLog() |
 | Get task logs | GetTaskLogs() |
 
-#### Case
+### Case
 | Description | gohive5  |
 |:---|:---|
 | Add task | AddTaskToCase() |
 | Get all tasks of a case | GetCaseTasks()|
 
-### Template
+## Template
 
-#### General
+### General
 | Description | gohive5  |
 |:---|:---|
 | Get case template | GetCaseTemplate() |
 | Delete case template | DeleteCaseTemplate() |
 | Update case template | UpdateCaseTemplate() |
 
-### Timeline
+## Timeline
 
-#### General
+### General
 | Description | gohive5  |
 |:---|:---|
 | Create customEvent | CreateTimelineEvent() |
@@ -109,21 +114,19 @@
 | Delete timeline event | DeleteTimelineEvent() |
 | Update timeline event | UpdateTimelineEvent()|
 
-### TTP
+## TTP
 
-#### Alert
+### Alert
 | Description | gohive5  |
 |:---|:---|
 | Add procedure to alert| AddAlertProcedure() |
 
-#### Case
+### Case
 | Description | gohive5  |
 |:---|:---|
 | Add procedure to case| AddCaseProcedure() |
 
-### TTP
-
-#### General
+### General
 | Description | gohive5  |
 |:---|:---|
 | Get visible users | GetVisibleUsers() |
