@@ -35,7 +35,6 @@ func (hive *Hivedata) webRequest(url string, m method, body []byte) ([]byte, err
 		return nil, err
 	}
 
-	fmt.Println(string(body))
 	// prepare headers
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
