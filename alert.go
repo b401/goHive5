@@ -598,7 +598,7 @@ func (hive *Hivedata) AddAlertObservable(alertNumber string, observable Observab
 // GetAlertObservables returns all observables associated with an alert
 func (hive *Hivedata) GetAlertObservables(alertId string) ([]ObservableResponse, error) {
 	query, err := hive.createSearchQuery(
-		SearchQuery{Name: "getAlert", IdOrName: &alertId},
+		SearchQuery{Name: "getAlert", IdOrName: alertId},
 		SearchQuery{Name: "observables"},
 	)
 
@@ -615,7 +615,7 @@ func (hive *Hivedata) GetAlertObservables(alertId string) ([]ObservableResponse,
 func (hive *Hivedata) GetAlertObservable(alertId, queryfield, queryvalue string) (*ObservableResponse, error) {
 
 	query, err := hive.createSearchQuery(
-		SearchQuery{Name: "getAlert", IdOrName: &alertId},
+		SearchQuery{Name: "getAlert", IdOrName: alertId},
 		SearchQuery{Name: "observables"},
 		SearchQuery{Name: "filter", Eq: &Filter{Field: queryfield, Value: &queryvalue}},
 	)

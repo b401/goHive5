@@ -379,16 +379,44 @@ type SearchQuery struct {
 	Is         *Filter               `json:"_is,omitempty"`
 	StartsWith *Filter               `json:"_startsWith,omitempty"`
 	EndsWith   *Filter               `json:"_endsWith,omitempty"`
-	Id         *string               `json:"_id,omitempty"`
+	Id         string                `json:"_id,omitempty"`
 	Between    *Filter               `json:"_between,omitempty"`
 	In         *Filter               `json:"_in,omitempty"`
-	Contains   *string               `json:"_contains,omitempty"`
+	Contains   string                `json:"_contains,omitempty"`
 	Like       *Filter               `json:"_like,omitempty"`
 	Match      *Filter               `json:"_match,omitempty"`
 	Sort       *[1]map[string]string `json:"_fields,omitempty"`
-	ScopeFrom  *int                  `json:"from,omitempty"`
-	ScopeTo    *int                  `json:"to,omitempty"`
-	IdOrName   *string               `json:"idOrName,omitempty"`
+	ScopeFrom  int                   `json:"from,omitempty"`
+	ScopeTo    int                   `json:"to,omitempty"`
+	ExtraData  []string              `json:"extraData,omitempty"`
+	IdOrName   string                `json:"idOrName,omitempty"`
+}
+
+// Marshalling the SearchQuery
+func (s *SearchQuery) MarshalJSON() ([]byte, error) {
+	type Alias SearchQuery
+	var (
+		scopeFrom *int
+		scopeTo   *int
+	)
+
+	if s.ScopeTo != 0 {
+		scopeTmpFrom := 0
+
+		scopeFrom = &scopeTmpFrom
+		scopeTo = &s.ScopeTo
+
+	}
+
+	return json.Marshal(&struct {
+		ScopeFrom *int `json:"from,omitempty"`
+		ScopeTo   *int `json:"to,omitempty"`
+		*Alias
+	}{
+		ScopeFrom: scopeFrom,
+		ScopeTo:   scopeTo,
+		Alias:     (*Alias)(s),
+	})
 }
 
 // A CaseStatusResponse is used for containing all possible case status options
@@ -454,8 +482,9 @@ type Filter struct {
 
 // A Scope has to be defined to search on specific pages
 type Scope struct {
-	From *int `json:"from,omitempty"`
-	To   *int `json:"to,omitempty"`
+	From      int     `json:"from,omitempty"`
+	To        int     `json:"to,omitempty"`
+	ExtraData ExtraData `json:"extraData"`
 }
 
 // executeCaseSearchQuery is a helper function to do query related searches
@@ -649,7 +678,7 @@ func (hive *Hivedata) GetCasesTimed(timeframe time.Time) ([]HiveCaseResponse, er
 func (hive *Hivedata) GetCaseAlerts(caseId int) ([]HiveAlertResponse, error) {
 	caseNumber := strconv.Itoa(caseId)
 	query, err := hive.createSearchQuery(
-		SearchQuery{Name: "getCase", IdOrName: &caseNumber},
+		SearchQuery{Name: "getCase", IdOrName: caseNumber},
 		SearchQuery{Name: "alerts"})
 	if err != nil {
 		return nil, err

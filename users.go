@@ -35,10 +35,12 @@ type UserResponse struct {
 }
 
 type Links struct {
-	ToOrganisation string `json:"toOrganisation"`
-	Avatar         string `json:"avatar,omitempty"`
-	LinkType       string `json:"linkType"`
-	OtherLinkType  string `json:"otherLinkType"`
+	ToOrganisation string             `json:"toOrganisation"`
+	Avatar         string             `json:"avatar,omitempty"`
+	LinkType       string             `json:"linkType,omitempty"`
+	OtherLinkType  string             `json:"otherLinkType,omitempty"`
+	Alert          *HiveAlertResponse `json:"alert,omitempty"`
+	Case           *HiveCaseResponse  `json:"case,omitempty"`
 }
 
 type Organisations struct {

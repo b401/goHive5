@@ -87,54 +87,58 @@ func (o *Observable) MarshalJSON() ([]byte, error) {
 
 // ObservableResponse contains the returned values from thehive5 observable api
 type ObservableResponse struct {
-	Id               string            `json:"_id"`
-	Type             string            `json:"_type"`
-	CreatedBy        string            `json:"_createdBy"`
-	UpdatedBy        string            `json:"_updatedBy"`
-	CreatedAt        time.Time         `json:"_createdAt"`
-	UpdatedAt        time.Time         `json:"_updatedAt"`
-	DataType         string            `json:"dataType"`
-	Data             string            `json:"data"`
-	StartDate        time.Time         `json:"startDate"`
-	Attachment       Attachment        `json:"attachment"`
-	Tlp              int               `json:"tlp"`
-	TlpLabel         string            `json:"tlpLabel"`
-	Pap              int               `json:"pap"`
-	PapLabel         string            `json:"papLabel"`
-	Tags             []string          `json:"tags"`
-	Ioc              bool              `json:"ioc"`
-	Sighted          bool              `json:"sighted"`
-	SightedAt        time.Time         `json:"sightedAt"`
-	Reports          struct{}          `json:"reports"`
-	Message          string            `json:"message"`
-	ExtraData        map[string]string `json:"extraData"`
-	IgnoreSimilarity bool              `json:"ignoreSimilarity"`
+	Id               string     `json:"_id"`
+	Type             string     `json:"_type"`
+	CreatedBy        string     `json:"_createdBy"`
+	UpdatedBy        string     `json:"_updatedBy"`
+	CreatedAt        time.Time  `json:"_createdAt"`
+	UpdatedAt        time.Time  `json:"_updatedAt"`
+	DataType         string     `json:"dataType"`
+	Data             string     `json:"data"`
+	StartDate        time.Time  `json:"startDate"`
+	Attachment       Attachment `json:"attachment"`
+	Tlp              int        `json:"tlp"`
+	TlpLabel         string     `json:"tlpLabel"`
+	Pap              int        `json:"pap"`
+	PapLabel         string     `json:"papLabel"`
+	Tags             []string   `json:"tags"`
+	Ioc              bool       `json:"ioc"`
+	Sighted          bool       `json:"sighted"`
+	SightedAt        time.Time  `json:"sightedAt"`
+	Reports          struct{}   `json:"reports"`
+	Message          string     `json:"message"`
+	ExtraData        ExtraData `json:"extraData,omitempty"`
+	IgnoreSimilarity bool       `json:"ignoreSimilarity"`
 }
 
 // ObservableResponse contains the returned values from thehive5 observable api
 type shadowObservableResponse struct {
-	Id               string            `json:"_id"`
-	Type             string            `json:"_type"`
-	CreatedBy        string            `json:"_createdBy"`
-	UpdatedBy        string            `json:"_updatedBy"`
-	CreatedAt        int64             `json:"_createdAt"`
-	UpdatedAt        int64             `json:"_updatedAt"`
-	DataType         string            `json:"dataType"`
-	Data             string            `json:"data"`
-	StartDate        int64             `json:"startDate"`
-	Attachment       Attachment        `json:"attachment"`
-	Tlp              int               `json:"tlp"`
-	TlpLabel         string            `json:"tlpLabel"`
-	Pap              int               `json:"pap"`
-	PapLabel         string            `json:"papLabel"`
-	Tags             []string          `json:"tags"`
-	Ioc              bool              `json:"ioc"`
-	Sighted          bool              `json:"sighted"`
-	SightedAt        int64             `json:"sightedAt"`
-	Reports          struct{}          `json:"reports"`
-	Message          string            `json:"message"`
-	ExtraData        map[string]string `json:"extraData"`
-	IgnoreSimilarity bool              `json:"ignoreSimilarity"`
+	Id               string     `json:"_id"`
+	Type             string     `json:"_type"`
+	CreatedBy        string     `json:"_createdBy"`
+	UpdatedBy        string     `json:"_updatedBy"`
+	CreatedAt        int64      `json:"_createdAt"`
+	UpdatedAt        int64      `json:"_updatedAt"`
+	DataType         string     `json:"dataType"`
+	Data             string     `json:"data"`
+	StartDate        int64      `json:"startDate"`
+	Attachment       Attachment `json:"attachment"`
+	Tlp              int        `json:"tlp"`
+	TlpLabel         string     `json:"tlpLabel"`
+	Pap              int        `json:"pap"`
+	PapLabel         string     `json:"papLabel"`
+	Tags             []string   `json:"tags"`
+	Ioc              bool       `json:"ioc"`
+	Sighted          bool       `json:"sighted"`
+	SightedAt        int64      `json:"sightedAt"`
+	Reports          struct{}   `json:"reports"`
+	Message          string     `json:"message"`
+	ExtraData        ExtraData `json:"extraData"`
+	IgnoreSimilarity bool       `json:"ignoreSimilarity"`
+}
+
+type ExtraData struct {
+	Links *Links `json:"links,omitempty"`
 }
 
 func (or *ObservableResponse) UnmarshalJSON(data []byte) error {
@@ -288,7 +292,7 @@ func (hive *Hivedata) AddCaseObservableFile(incidentNumber int, observable *Obse
 func (hive *Hivedata) GetCaseObservables(caseId int) ([]ObservableResponse, error) {
 	caseNumber := strconv.Itoa(caseId)
 	query, err := hive.createSearchQuery(
-		SearchQuery{Name: "getCase", IdOrName: &caseNumber},
+		SearchQuery{Name: "getCase", IdOrName: caseNumber},
 		SearchQuery{Name: "observables"},
 	)
 	if err != nil {
@@ -350,9 +354,25 @@ func (hive *Hivedata) GetObservable(observableID string) (*ObservableResponse, e
 func (hive *Hivedata) GetCaseObservablesFiltered(caseId int, queryfield, queryvalue string) ([]ObservableResponse, error) {
 	caseNumber := strconv.Itoa(caseId)
 	query, err := hive.createSearchQuery(
-		SearchQuery{Name: "getCase", IdOrName: &caseNumber},
+		SearchQuery{Name: "getCase", IdOrName: caseNumber},
 		SearchQuery{Name: "observables"},
 		SearchQuery{Name: "filter", Eq: &Filter{Field: queryfield, Value: &queryvalue}})
+	if err != nil {
+		return nil, err
+	}
+
+	return hive.executeObservableSearchQuery(query)
+}
+
+// Find an observable globally
+// It returns a pointer to an ObservableResponse slice or an error
+// Be aware that the ObservableResponse will contain a ExtraData field which contains a HiveCaseResponse or HiveAlerResponse object
+func (hive *Hivedata) FindObservable(value string) ([]ObservableResponse, error) {
+	query, err := hive.createSearchQuery(
+		SearchQuery{Name: "listObservable"},
+		SearchQuery{Name: "filter", And: &[]Filter{{Field: "keyword", Value: &value}}},
+		SearchQuery{Name: "sort", Sort: &[1]map[string]string{{"_createdAt": "desc"}}},
+		SearchQuery{Name: "page", ScopeFrom: 0, ScopeTo: 10, ExtraData: []string{"links"}})
 	if err != nil {
 		return nil, err
 	}

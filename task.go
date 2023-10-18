@@ -370,7 +370,7 @@ func (hive *Hivedata) CreateTaskLog(taskId string, log *TaskLog) (*TaskLogRespon
 // It returns a task log slice or an error
 func (hive *Hivedata) GetTaskLogs(taskId string) ([]TaskLogResponse, error) {
 	query, err := hive.createSearchQuery(
-		SearchQuery{Name: "getTask", IdOrName: &taskId},
+		SearchQuery{Name: "getTask", IdOrName: taskId},
 		SearchQuery{Name: "logs"},
 		SearchQuery{Name: "sort", Sort: &[1]map[string]string{{"_createdAt": "asc"}}})
 	if err != nil {
@@ -385,7 +385,7 @@ func (hive *Hivedata) GetTaskLogs(taskId string) ([]TaskLogResponse, error) {
 func (hive *Hivedata) GetCaseTasks(caseId int) ([]CaseTaskResponse, error) {
 	caseNumber := strconv.Itoa(caseId)
 	query, err := hive.createSearchQuery(
-		SearchQuery{Name: "getCase", IdOrName: &caseNumber},
+		SearchQuery{Name: "getCase", IdOrName: caseNumber},
 		SearchQuery{Name: "tasks"},
 		SearchQuery{Name: "sort", Sort: &[1]map[string]string{{"_createdAt": "asc"}}})
 	if err != nil {

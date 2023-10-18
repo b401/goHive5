@@ -103,7 +103,7 @@ func (hive *Hivedata) executeCommentSearchQuery(query []byte) ([]CommentResponse
 // It returns a comment slice or an error
 func (hive *Hivedata) GetAlertComments(alertId string) ([]CommentResponse, error) {
 	query, err := hive.createSearchQuery(
-		SearchQuery{Name: "getAlert", IdOrName: &alertId},
+		SearchQuery{Name: "getAlert", IdOrName: alertId},
 		SearchQuery{Name: "comments"},
 	)
 	if err != nil {
@@ -165,7 +165,7 @@ func (hive *Hivedata) AddCaseComment(caseId int, comment *Comment) (*CommentResp
 func (hive *Hivedata) GetCaseComments(caseId int) ([]CommentResponse, error) {
 	caseNumber := strconv.Itoa(caseId)
 	query, err := hive.createSearchQuery(
-		SearchQuery{Name: "getCase", IdOrName: &caseNumber},
+		SearchQuery{Name: "getCase", IdOrName: caseNumber},
 		SearchQuery{Name: "comments"},
 	)
 	if err != nil {
@@ -180,7 +180,7 @@ func (hive *Hivedata) GetCaseCommentsTimed(caseId int, timeframe time.Time) ([]C
 	caseNumber := strconv.Itoa(caseId)
 
 	query, err := hive.createSearchQuery(
-		SearchQuery{Name: "getCase", IdOrName: &caseNumber},
+		SearchQuery{Name: "getCase", IdOrName: caseNumber},
 		SearchQuery{Name: "comments"},
 		SearchQuery{Name: "filter", Gte: &Filter{Field: "_createdAt", Value: timeframe.UnixMilli()}},
 	)
