@@ -111,16 +111,16 @@ type Pages struct {
 
 type HiveUpdateCase struct {
 	Title             string              `json:"title,omitempty"`
-	Description       string              `json:"description,omitempty"`
+	Description       *string              `json:"description,omitempty"`
 	Severity          string              `json:"severity,omitempty"`
 	StartDate         time.Time           `json:"startDate,omitempty"`
 	EndDate           time.Time           `json:"endDate,omitempty"`
-	Tags              []string            `json:"tags,omitempty"`
+	Tags              *[]string            `json:"tags,omitempty"`
 	Flag              *bool               `json:"flag,omitempty"`
 	Tlp               string              `json:"tlp,omitempty"`
 	Pap               string              `json:"pap,omitempty"`
 	Status            string              `json:"status,omitempty"`
-	Summary           string              `json:"summary,omitempty"`
+	Summary           *string              `json:"summary,omitempty"`
 	Assignee          string              `json:"assignee,omitempty"`
 	CustomFields      *[]CustomField      `json:"customFields,omitempty"`
 	Template          string              `json:"caseTemplate,omitempty"`
@@ -128,7 +128,7 @@ type HiveUpdateCase struct {
 	SharingParameters *[]SharingParameter `json:"sharingParameters,omitempty"`
 	TaskRule          string              `json:"taskRule,omitempty"`
 	ObservableRule    string              `json:"observableRule,omitempty"`
-	ImpactStatus      string              `json:"impactStatus,omitempty"`
+	ImpactStatus      *string              `json:"impactStatus,omitempty"`
 	AddTags           []string            `json:"addTags,omitempty"`
 	RemoveTags        []string            `json:"removeTags,omitempty"`
 }
@@ -151,7 +151,9 @@ func (hu *HiveUpdateCase) MarshalJSON() ([]byte, error) {
 	if !hu.EndDate.IsZero() {
 		// We ensure that all data sent to the hive is in UTC format
 		endDateInt64 = hu.EndDate.UTC().UnixMilli()
-	}
+	} else {
+        endDateInt64 = 0
+    }
 
 	if len(hu.Severity) != 0 {
 		var sev Severity
@@ -182,16 +184,19 @@ func (hu *HiveUpdateCase) MarshalJSON() ([]byte, error) {
 		papInt = &tmp
 	}
 
-	if len(hu.ImpactStatus) != 0 {
-		switch strings.ToLower(hu.ImpactStatus) {
+	if hu.ImpactStatus != nil {
+		switch strings.ToLower(*hu.ImpactStatus) {
 		case "withimpact":
-			hu.ImpactStatus = "WithImpact"
+			*hu.ImpactStatus = "WithImpact"
 		case "noimpact":
-			hu.ImpactStatus = "NoImpact"
+			*hu.ImpactStatus = "NoImpact"
+        case "":
+            hu.ImpactStatus = nil
 		default:
-			return nil, fmt.Errorf("unknown impact value: %s", hu.ImpactStatus)
+			return nil, fmt.Errorf("unknown impact value: %s", *hu.ImpactStatus)
 		}
 	}
+
 
 	return json.Marshal(&struct {
 		StartDate int64 `json:"startDate,omitempty"`
